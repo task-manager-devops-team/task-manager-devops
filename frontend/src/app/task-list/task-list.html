@@ -1,6 +1,10 @@
 <h2>Mes tâches</h2>
 
-@if (tasks.length === 0) {
+@if (loading()) {
+  <p>Chargement…</p>
+} @else if (error()) {
+  <p>Impossible de charger les tâches.</p>
+} @else if (tasks().length === 0) {
   <p>Aucune tâche</p>
 } @else {
   <table>
@@ -13,7 +17,7 @@
       </tr>
     </thead>
     <tbody>
-      @for (task of tasks; track task.id) {
+      @for (task of tasks(); track task.id) {
         <tr>
           <td>{{ task.title }}</td>
           <td>{{ task.priority }}</td>
