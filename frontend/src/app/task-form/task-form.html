@@ -35,6 +35,7 @@
         </mat-form-field>
       </div>
 
+      @if (isManager()) {
       <mat-form-field appearance="outline">
         <mat-label>Responsable</mat-label>
         <mat-select formControlName="assigneeId">
@@ -47,6 +48,7 @@
           <mat-hint>Liste des responsables indisponible pour le moment.</mat-hint>
         }
       </mat-form-field>
+      }
 
       @if (error()) {
         <p class="error">La création a échoué. Réessayez.</p>

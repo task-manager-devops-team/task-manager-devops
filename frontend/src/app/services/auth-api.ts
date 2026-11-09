@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { inject, Injectable, signal } from '@angular/core';
+import { computed, inject, Injectable, signal } from '@angular/core';
 import { catchError, finalize, Observable, of, tap } from 'rxjs';
 import {
   ForgotPasswordRequest,
@@ -17,6 +17,9 @@ export class AuthApi {
   private readonly baseUrl = 'http://localhost:8080/api/auth';
 
   readonly token = signal<string | null>(sessionStorage.getItem(TOKEN_KEY));
+
+  readonly role = computed(() => this.claim('role'));
+  readonly isProjectManager = computed(() => this.role() === 'CHEF_PROJET');
 
   login(request: LoginRequest): Observable<LoginResponse> {
     return this.http
@@ -58,6 +61,20 @@ export class AuthApi {
     }
     const expiresAt = this.expiresAt(token);
     return expiresAt === null || expiresAt > Date.now();
+  }
+
+  private claim(name: string): string | null {
+    const token = this.token();
+    if (!token) {
+      return null;
+    }
+    try {
+      const payload = token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/');
+      const value = JSON.parse(atob(payload))[name];
+      return typeof value === 'string' ? value : null;
+    } catch {
+      return null;
+    }
   }
 
   private saveToken(token: string): void {

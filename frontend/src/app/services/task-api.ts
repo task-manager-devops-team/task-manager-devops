@@ -35,6 +35,10 @@ export class TaskApi {
     return this.http.patch<Task>(`${this.baseUrl}/tasks/${id}`, { status });
   }
 
+  assign(id: number, assigneeId: number | null): Observable<Task> {
+    return this.http.patch<Task>(`${this.baseUrl}/tasks/${id}`, { assigneeId });
+  }
+
   deleteTask(id: number): Observable<void> {
     return this.http.delete<void>(`${this.baseUrl}/tasks/${id}`);
   }

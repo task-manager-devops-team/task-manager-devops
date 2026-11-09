@@ -125,3 +125,10 @@ mat-card-title {
   height: 18px;
   font-size: 18px;
 }
+.mat-column-actions {
+  width: 160px;
+  min-width: 160px;
+  white-space: nowrap;
+  overflow: visible;
+  text-overflow: clip;
+}
