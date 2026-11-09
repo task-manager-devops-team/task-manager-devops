@@ -87,6 +87,7 @@ export class TaskList implements OnInit {
 
     let list = this.tasks().filter(
       (t) =>
+        !t.archived &&
         (!q || t.title.toLowerCase().includes(q)) &&
         (!status || t.status === status) &&
         (!priority || t.priority === priority) &&
@@ -200,6 +201,15 @@ export class TaskList implements OnInit {
           },
         });
       });
+  }
+
+  archive(task: Task): void {
+    this.actionError.set(false);
+    this.api.archive(task.id, true).subscribe({
+      next: () =>
+        this.tasks.update((list) => list.map((t) => (t.id === task.id ? { ...t, archived: true } : t))),
+      error: () => this.actionError.set(true),
+    });
   }
 
   remove(task: Task): void {

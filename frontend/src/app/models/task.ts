@@ -10,6 +10,7 @@ export interface Task {
   status: TaskStatus;
   assigneeId?: number;
   assigneeName?: string;
+  archived?: boolean;
 }
 
 export interface TaskCreate {
