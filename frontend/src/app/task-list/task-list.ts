@@ -4,6 +4,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
+import { MatMenuModule } from '@angular/material/menu';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTableModule } from '@angular/material/table';
 import { RouterLink } from '@angular/router';
@@ -20,6 +21,7 @@ import { DeleteDialog } from './delete-dialog';
     MatCardModule,
     MatDialogModule,
     MatIconModule,
+    MatMenuModule,
     MatProgressSpinnerModule,
     MatTableModule,
   ],
@@ -68,6 +70,29 @@ export class TaskList implements OnInit {
         this.loading.set(false);
       },
     });
+  }
+
+  readonly statusOptions: { value: TaskStatus; label: string }[] = [
+    { value: 'TODO', label: 'À faire' },
+    { value: 'IN_PROGRESS', label: 'En cours' },
+    { value: 'DONE', label: 'Terminé' },
+  ];
+
+  changeStatus(task: Task, status: TaskStatus): void {
+    if (status === task.status) return;
+    const previous = task.status;
+    this.actionError.set(false);
+    this.setStatus(task.id, status);
+    this.api.updateStatus(task.id, status).subscribe({
+      error: () => {
+        this.setStatus(task.id, previous);
+        this.actionError.set(true);
+      },
+    });
+  }
+
+  private setStatus(id: number, status: TaskStatus): void {
+    this.tasks.update((list) => list.map((t) => (t.id === id ? { ...t, status } : t)));
   }
 
   remove(task: Task): void {
