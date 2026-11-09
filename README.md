@@ -15,7 +15,7 @@ Application de gestion des tâches avec pipeline CI/CD et déploiement automatis
 
 - Java 21
 - Docker
-- Node.js (pour le frontend)
+- Node.js 22 (pour le frontend)
 - Git
 
 ## Lancer le backend en local
@@ -67,6 +67,35 @@ cd backend
 - `GET http://localhost:8080/api/health` renvoie `{"status":"ok"}`
 - `GET http://localhost:8080/actuator/health` renvoie `"status":"UP"`
 
+## Lancer le frontend en local
+
+Le backend doit tourner sur `http://localhost:8080` (voir plus haut).
+
+```bash
+cd frontend
+npm ci
+npx ng serve
+```
+
+Ouvrir `http://localhost:4200`. En développement, l'application appelle l'API sur `http://localhost:8080/api`.
+
+Tests et build du frontend :
+
+```bash
+cd frontend
+npx ng test --watch=false
+npx ng build
+```
+
+Image Docker du frontend (Nginx, utilisateur non-root, port 8080) :
+
+```bash
+docker build -t taskmanager-ui:local frontend
+docker run --rm -p 8081:8080 taskmanager-ui:local
+```
+
+Nginx relaie `/api` vers un service nommé `backend` (prévu dans le futur `docker-compose.yml`).
+
 ## Lancer les tests
 
 ```bash
@@ -85,3 +114,7 @@ cd backend
 ## CI/CD
 
 Le workflow `.github/workflows/ci.yml` build et teste le projet à chaque push et chaque pull request.
+
+Le job `frontend` de `ci.yml` installe les dépendances (`npm ci`), audite celles de production (`npm audit`, seuil high), lance les tests puis construit l'application.
+
+Le workflow `.github/workflows/frontend-image.yml` construit l'image du frontend, la scanne avec Trivy (failles HIGH et CRITICAL corrigeables), puis la publie sur `ghcr.io/task-manager-devops-team/taskflow-frontend` avec les tags `sha-<commit>` et `latest` à chaque fusion dans `main`.
