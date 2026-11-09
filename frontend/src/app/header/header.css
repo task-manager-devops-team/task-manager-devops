@@ -1,0 +1,65 @@
+.app-header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 32px;
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(8px);
+  border-bottom: 3px solid transparent;
+  border-image: linear-gradient(90deg, #5f2a85, #7b3fa0, #c98a96) 1;
+  box-shadow: 0 6px 20px rgba(95, 42, 133, 0.1);
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.logo {
+  width: 52px;
+  height: 52px;
+  clip-path: inset(6.3% round 17%);
+  filter: drop-shadow(0 2px 4px rgba(95, 42, 133, 0.25));
+}
+
+.brand-text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.15;
+}
+
+.brand-name {
+  font-size: 1.5rem;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  background: linear-gradient(90deg, #5f2a85, #c98a96);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.brand-tag {
+  font-size: 0.75rem;
+  color: #8a7a8c;
+  letter-spacing: 0.03em;
+}
+
+.logout {
+  --mat-button-outlined-outline-color: #dcc3e6;
+  --mat-button-outlined-label-text-color: #5f2a85;
+  border-radius: 999px;
+}
+
+.logout:hover {
+  background: #f6ebf8;
+}
+
+@media (max-width: 600px) {
+  .app-header { padding: 8px 16px; }
+  .brand-tag { display: none; }
+  .brand-name { font-size: 1.25rem; }
+}

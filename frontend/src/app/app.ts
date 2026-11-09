@@ -1,9 +1,10 @@
 import { Component } from '@angular/core';
-import { TaskList } from './task-list/task-list';
+import { RouterOutlet } from '@angular/router';
+import { Header } from './header/header';
 
 @Component({
   selector: 'app-root',
-  imports: [TaskList],
+  imports: [RouterOutlet, Header],
   templateUrl: './app.html',
   styleUrl: './app.css',
 })
