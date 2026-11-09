@@ -10,6 +10,7 @@ RUN ./mvnw -B -q package -DskipTests
 # ---- Étape 2 : exécution ----
 FROM eclipse-temurin:21-jre
 RUN apt-get update \
+    && apt-get upgrade -y --no-install-recommends \
     && apt-get install -y --no-install-recommends curl \
     && rm -rf /var/lib/apt/lists/* \
     && useradd --system --create-home --uid 1001 appuser
