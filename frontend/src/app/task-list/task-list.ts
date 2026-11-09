@@ -9,7 +9,9 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTableModule } from '@angular/material/table';
 import { RouterLink } from '@angular/router';
 import { Task, TaskPriority, TaskStatus } from '../models/task';
+import { AuthApi } from '../services/auth-api';
 import { TaskApi } from '../services/task-api';
+import { AssignDialog } from './assign-dialog';
 import { DeleteDialog } from './delete-dialog';
 
 @Component({
@@ -31,6 +33,10 @@ import { DeleteDialog } from './delete-dialog';
 export class TaskList implements OnInit {
   private readonly api = inject(TaskApi);
   private readonly dialog = inject(MatDialog);
+  private readonly auth = inject(AuthApi);
+
+  readonly isManager = this.auth.isProjectManager;
+  readonly forbidden = signal(false);
 
   readonly displayedColumns = ['title', 'assignee', 'priority', 'dueDate', 'status', 'actions'];
 
@@ -93,6 +99,34 @@ export class TaskList implements OnInit {
 
   private setStatus(id: number, status: TaskStatus): void {
     this.tasks.update((list) => list.map((t) => (t.id === id ? { ...t, status } : t)));
+  }
+
+  assign(task: Task): void {
+    this.dialog
+      .open(AssignDialog, { data: task, width: '380px' })
+      .afterClosed()
+      .subscribe((result) => {
+        if (!result) return;
+        this.forbidden.set(false);
+        this.actionError.set(false);
+        this.api.assign(task.id, result.assigneeId).subscribe({
+          next: (updated) =>
+            this.tasks.update((list) =>
+              list.map((t) =>
+                t.id === task.id
+                  ? { ...t, assigneeId: updated.assigneeId, assigneeName: updated.assigneeName }
+                  : t,
+              ),
+            ),
+          error: (e: { status?: number }) => {
+            if (e.status === 403) {
+              this.forbidden.set(true);
+            } else {
+              this.actionError.set(true);
+            }
+          },
+        });
+      });
   }
 
   remove(task: Task): void {

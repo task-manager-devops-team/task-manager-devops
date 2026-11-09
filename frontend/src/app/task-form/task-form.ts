@@ -8,6 +8,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { TaskCreate, TaskPriority, TaskStatus } from '../models/task';
 import { User } from '../models/user';
+import { AuthApi } from '../services/auth-api';
 import { TaskApi } from '../services/task-api';
 
 @Component({
@@ -29,6 +30,7 @@ export class TaskForm implements OnInit {
   private readonly api = inject(TaskApi);
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
+  readonly isManager = inject(AuthApi).isProjectManager;
 
   readonly taskId = Number(this.route.snapshot.paramMap.get('id')) || null;
   private status: TaskStatus = 'TODO';

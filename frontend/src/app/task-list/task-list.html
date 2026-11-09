@@ -8,6 +8,10 @@
     <p class="state state-error">L'action a échoué. Réessayez.</p>
   }
 
+  @if (forbidden()) {
+    <p class="state state-error">Seul le chef de projet peut assigner une tâche.</p>
+  }
+
   <mat-card-content>
     @if (loading()) {
       <div class="state">
@@ -64,6 +68,11 @@
             <a mat-icon-button [routerLink]="['/tasks', task.id, 'edit']" aria-label="Modifier la tâche">
               <mat-icon>edit</mat-icon>
             </a>
+            @if (isManager()) {
+              <button mat-icon-button type="button" (click)="assign(task)" aria-label="Assigner la tâche">
+                <mat-icon>person_add</mat-icon>
+              </button>
+            }
             <button mat-icon-button type="button" (click)="remove(task)" aria-label="Supprimer la tâche">
               <mat-icon>delete</mat-icon>
             </button>
