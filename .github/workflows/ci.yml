@@ -3,7 +3,7 @@ name: CI
 on:
   push:
     branches: [main]
-    tags: ["v*"]
+    tags: ["v*.*.*"]
   pull_request:
 
 permissions:
@@ -67,7 +67,7 @@ jobs:
       contents: read
       packages: write
     env:
-      IMAGE: ghcr.io/${{ github.repository }}/backend
+      IMAGE: ghcr.io/task-manager-devops-team/taskflow-backend
     steps:
       - name: Récupérer le code
         uses: actions/checkout@v5
@@ -81,7 +81,7 @@ jobs:
         with:
           images: ${{ env.IMAGE }}
           tags: |
-            type=sha
+            type=sha,format=long
             type=semver,pattern={{version}}
 
       - name: Construire l'image (sans publier) pour le scan
