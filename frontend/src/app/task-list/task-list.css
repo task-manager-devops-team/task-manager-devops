@@ -103,10 +103,11 @@ mat-card-title {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 16px 16px 0;
+  padding: 8px 24px 20px;
 }
 
 .list-title {
   margin: 0;
+  line-height: 1;
   color: #662d91;
 }

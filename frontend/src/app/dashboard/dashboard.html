@@ -1,0 +1,39 @@
+<section class="page">
+  <h1>Tableau de bord</h1>
+
+  @if (loading()) {
+    <div class="state"><mat-spinner [diameter]="32"></mat-spinner></div>
+  } @else if (error()) {
+    <p class="state error">Impossible de charger les statistiques.</p>
+  } @else if (stats(); as s) {
+    <div class="kpis">
+      <mat-card class="kpi"><span class="kpi-value">{{ s.total }}</span><span class="kpi-label">Tâches</span></mat-card>
+      <mat-card class="kpi"><span class="kpi-value">{{ rate() }} %</span><span class="kpi-label">Avancement</span></mat-card>
+      <mat-card class="kpi late"><span class="kpi-value">{{ s.overdue }}</span><span class="kpi-label">En retard</span></mat-card>
+    </div>
+
+    <div class="charts">
+      <mat-card class="chart">
+        <h2>Par statut</h2>
+        @for (row of statusRows; track row.key) {
+          <div class="bar-row">
+            <span class="bar-label">{{ row.label }}</span>
+            <div class="bar-track"><div [class]="'bar-fill status-' + row.key" [style.width.%]="percent(s.byStatus[row.key])"></div></div>
+            <span class="bar-count">{{ s.byStatus[row.key] }}</span>
+          </div>
+        }
+      </mat-card>
+
+      <mat-card class="chart">
+        <h2>Par priorité</h2>
+        @for (row of priorityRows; track row.key) {
+          <div class="bar-row">
+            <span class="bar-label">{{ row.label }}</span>
+            <div class="bar-track"><div [class]="'bar-fill priority-' + row.key" [style.width.%]="percent(s.byPriority[row.key])"></div></div>
+            <span class="bar-count">{{ s.byPriority[row.key] }}</span>
+          </div>
+        }
+      </mat-card>
+    </div>
+  }
+</section>

@@ -6,3 +6,12 @@ h1 {
   font-weight: 700;
   letter-spacing: -0.5px;
 }
+.shell {
+  display: flex;
+  align-items: flex-start;
+}
+
+.shell main {
+  flex: 1;
+  min-width: 0;
+}

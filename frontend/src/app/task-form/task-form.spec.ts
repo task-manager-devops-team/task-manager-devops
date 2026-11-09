@@ -43,6 +43,6 @@ describe('TaskForm', () => {
     expect(req.request.body.assigneeId).toBe(1);
     req.flush({ id: 5, title: 'Nouvelle tâche', priority: 'MEDIUM', status: 'TODO' });
 
-    expect(navigate).toHaveBeenCalledWith(['/dashboard']);
+    expect(navigate).toHaveBeenCalledWith(['/tasks']);
   });
 });

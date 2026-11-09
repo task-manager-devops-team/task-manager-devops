@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { authGuard } from './auth/auth.guard';
+import { Dashboard } from './dashboard/dashboard';
 import { ForgotPassword } from './forgot-password/forgot-password';
 import { Login } from './login/login';
 import { Register } from './register/register';
@@ -12,7 +13,8 @@ export const routes: Routes = [
   { path: 'forgot-password', component: ForgotPassword },
   { path: 'register', component: Register },
   { path: 'reset-password', component: ResetPassword },
-  { path: 'dashboard', component: TaskList, canActivate: [authGuard] },
+  { path: 'dashboard', component: Dashboard, canActivate: [authGuard] },
+  { path: 'tasks', component: TaskList, canActivate: [authGuard] },
   { path: 'tasks/new', component: TaskForm, canActivate: [authGuard] },
   { path: '', pathMatch: 'full', redirectTo: 'dashboard' },
   { path: '**', redirectTo: 'dashboard' },

@@ -72,7 +72,7 @@ export class TaskForm implements OnInit {
     this.saving.set(true);
     this.error.set(false);
     this.api.createTask(body).subscribe({
-      next: () => this.router.navigate(['/dashboard']),
+      next: () => this.router.navigate(['/tasks']),
       error: () => {
         this.saving.set(false);
         this.error.set(true);
