@@ -1,8 +1,13 @@
 import { DatePipe } from '@angular/common';
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
+import { FormsModule } from '@angular/forms';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
+import { MatSortModule, Sort } from '@angular/material/sort';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
@@ -18,6 +23,11 @@ import { DeleteDialog } from './delete-dialog';
   selector: 'app-task-list',
   imports: [
     DatePipe,
+    FormsModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatSelectModule,
+    MatSortModule,
     RouterLink,
     MatButtonModule,
     MatCardModule,
@@ -53,6 +63,69 @@ export class TaskList implements OnInit {
   };
 
   readonly tasks = signal<Task[]>([]);
+
+  readonly search = signal('');
+  readonly statusFilter = signal<TaskStatus | ''>('');
+  readonly priorityFilter = signal<TaskPriority | ''>('');
+  readonly assigneeFilter = signal<number | ''>('');
+  readonly sort = signal<Sort>({ active: '', direction: '' });
+
+  readonly assignees = computed(() => {
+    const seen = new Map<number, string>();
+    for (const t of this.tasks()) {
+      if (t.assigneeId != null && t.assigneeName) seen.set(t.assigneeId, t.assigneeName);
+    }
+    return [...seen].map(([id, name]) => ({ id, name }));
+  });
+
+  readonly visibleTasks = computed(() => {
+    const q = this.search().trim().toLowerCase();
+    const status = this.statusFilter();
+    const priority = this.priorityFilter();
+    const assignee = this.assigneeFilter();
+    const rank: Record<TaskPriority, number> = { LOW: 0, MEDIUM: 1, HIGH: 2 };
+
+    let list = this.tasks().filter(
+      (t) =>
+        (!q || t.title.toLowerCase().includes(q)) &&
+        (!status || t.status === status) &&
+        (!priority || t.priority === priority) &&
+        (assignee === '' || t.assigneeId === assignee),
+    );
+
+    const { active, direction } = this.sort();
+    if (active && direction) {
+      const sign = direction === 'asc' ? 1 : -1;
+      list = [...list].sort((a, b) => {
+        switch (active) {
+          case 'title':
+            return sign * a.title.localeCompare(b.title, 'fr');
+          case 'assignee':
+            return sign * (a.assigneeName ?? '').localeCompare(b.assigneeName ?? '', 'fr');
+          case 'priority':
+            return sign * (rank[a.priority] - rank[b.priority]);
+          case 'dueDate':
+            return sign * (a.dueDate ?? '9999').localeCompare(b.dueDate ?? '9999');
+          case 'status':
+            return sign * a.status.localeCompare(b.status);
+          default:
+            return 0;
+        }
+      });
+    }
+    return list;
+  });
+
+  readonly hasFilters = computed(
+    () => !!(this.search() || this.statusFilter() || this.priorityFilter() || this.assigneeFilter() !== ''),
+  );
+
+  resetFilters(): void {
+    this.search.set('');
+    this.statusFilter.set('');
+    this.priorityFilter.set('');
+    this.assigneeFilter.set('');
+  }
   readonly loading = signal(true);
   readonly error = signal(false);
   readonly actionError = signal(false);
