@@ -1,0 +1,62 @@
+<div class="login-page">
+  <mat-card class="login-card">
+    <div class="login-header">
+      <img class="logo" src="logo.jpeg" alt="Taskflow" />
+      <h1>Taskflow</h1>
+      <p>Connectez-vous pour accéder à vos tâches</p>
+    </div>
+
+    <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+      <mat-form-field appearance="outline">
+        <mat-label>Email</mat-label>
+        <input matInput type="email" formControlName="email" autocomplete="username" />
+        <mat-icon matPrefix>mail</mat-icon>
+        @if (form.controls.email.hasError('required')) {
+          <mat-error>L'email est obligatoire</mat-error>
+        } @else if (form.controls.email.hasError('email')) {
+          <mat-error>Format d'email invalide</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Mot de passe</mat-label>
+        <input
+          matInput
+          [type]="hidePassword() ? 'password' : 'text'"
+          formControlName="password"
+          autocomplete="current-password"
+        />
+        <mat-icon matPrefix>lock</mat-icon>
+        <button
+          mat-icon-button
+          matSuffix
+          type="button"
+          (click)="togglePassword()"
+          [attr.aria-label]="hidePassword() ? 'Afficher le mot de passe' : 'Masquer le mot de passe'"
+          [attr.aria-pressed]="!hidePassword()"
+        >
+          <mat-icon>{{ hidePassword() ? 'visibility' : 'visibility_off' }}</mat-icon>
+        </button>
+        @if (form.controls.password.hasError('required')) {
+          <mat-error>Le mot de passe est obligatoire</mat-error>
+        }
+      </mat-form-field>
+
+      <a class="forgot-link" routerLink="/forgot-password">Mot de passe oublié ?</a>
+
+      @if (errorMessage()) {
+        <p class="form-error" role="alert">{{ errorMessage() }}</p>
+      }
+
+      <button mat-flat-button class="submit" type="submit" [disabled]="loading()">
+        @if (loading()) {
+          <mat-spinner [diameter]="20"></mat-spinner>
+        } @else {
+          Se connecter
+        }
+      </button>
+    </form>
+
+    <a class="back-link" routerLink="/register">Pas de compte ? Créer un compte</a>
+  </mat-card>
+</div>

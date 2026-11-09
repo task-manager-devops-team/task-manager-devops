@@ -1,0 +1,15 @@
+@if (visible()) {
+  <header class="app-header">
+    <div class="brand">
+      <img class="logo" src="logo.jpeg" alt="" />
+      <div class="brand-text">
+        <span class="brand-name">Taskflow</span>
+        <span class="brand-tag">Vos tâches, en équipe</span>
+      </div>
+    </div>
+    <button mat-stroked-button class="logout" type="button" (click)="logout()">
+      <mat-icon>logout</mat-icon>
+      Se déconnecter
+    </button>
+  </header>
+}

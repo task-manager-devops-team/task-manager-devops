@@ -6,3 +6,22 @@ html, body {
   background: #f6f7fb;
   font-family: Roboto, "Helvetica Neue", sans-serif;
 }
+/* Charte Taskflow : couleurs du logo MW */
+:root {
+  --tf-purple-dark: #5f2a85;
+  --tf-purple: #7b3fa0;
+  --tf-copper: #c98a96;
+  --tf-bg: #fbf1ef;
+  --tf-border: #efdcdf;
+
+  --mat-sys-primary: #7b3fa0;
+  --mat-sys-on-primary: #ffffff;
+  --mat-sys-primary-container: #f1dcf5;
+  --mat-sys-on-primary-container: #4a1a66;
+  --mat-sys-surface-tint: #7b3fa0;
+  --mat-sys-secondary: #c98a96;
+}
+
+html, body {
+  background: var(--tf-bg);
+}
