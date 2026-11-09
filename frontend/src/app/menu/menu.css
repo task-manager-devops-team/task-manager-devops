@@ -1,0 +1,70 @@
+:host {
+  display: block;
+  flex-shrink: 0;
+  width: 88px;
+  position: relative;
+  z-index: 20;
+}
+
+.menu {
+  position: sticky;
+  top: 80px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: 64px;
+  margin: 16px 0 16px 16px;
+  padding: 8px;
+  overflow: hidden;
+  white-space: nowrap;
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 20px;
+  box-shadow: 0 6px 20px rgba(95, 42, 133, 0.1);
+  transition: width 0.2s ease;
+}
+
+.menu:hover,
+.menu:focus-within {
+  width: 250px;
+}
+
+.item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: 999px;
+  color: #5f2a85;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.item mat-icon { flex-shrink: 0; }
+
+.item:hover:not(.disabled) { background: #f6ebf8; }
+
+.item.active {
+  color: #fff;
+  background: linear-gradient(90deg, #5f2a85, #c98a96);
+}
+
+.item.disabled { color: #b8a9bb; cursor: not-allowed; }
+
+.soon {
+  margin-left: auto;
+  padding: 2px 8px;
+  font-size: 0.65rem;
+  color: #8a7a8c;
+  background: #f3e8f6;
+  border-radius: 999px;
+}
+.menu { box-sizing: border-box; }
+
+.label,
+.soon { display: none; }
+
+.menu:hover .label,
+.menu:focus-within .label { display: inline; }
+
+.menu:hover .soon,
+.menu:focus-within .soon { display: inline; }

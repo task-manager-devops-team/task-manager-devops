@@ -1,0 +1,18 @@
+@if (visible()) {
+  <nav class="menu" aria-label="Navigation principale">
+    @for (item of items; track item.label) {
+      @if (item.route) {
+        <a class="item" [routerLink]="item.route" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+          <mat-icon>{{ item.icon }}</mat-icon>
+          <span class="label">{{ item.label }}</span>
+        </a>
+      } @else {
+        <span class="item disabled" aria-disabled="true">
+          <mat-icon>{{ item.icon }}</mat-icon>
+          <span class="label">{{ item.label }}</span>
+          <span class="soon">Bientôt</span>
+        </span>
+      }
+    }
+  </nav>
+}

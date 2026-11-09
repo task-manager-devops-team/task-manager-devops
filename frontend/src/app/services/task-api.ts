@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
+import { Stats } from '../models/stats';
 import { Task, TaskCreate } from '../models/task';
 import { User } from '../models/user';
 
@@ -24,5 +25,9 @@ export class TaskApi {
 
   getUsers(): Observable<User[]> {
     return this.http.get<User[]>(`${this.baseUrl}/users`);
+  }
+
+  getStats(): Observable<Stats> {
+    return this.http.get<Stats>(`${this.baseUrl}/stats`);
   }
 }
