@@ -1,0 +1,10 @@
+.page { padding: 24px 32px; }
+.archives-card { padding: 24px; border-radius: 24px; border-top: 6px solid #7b3fa0; }
+h1 { margin: 0 0 16px; color: #662d91; }
+.state { display: flex; justify-content: center; padding: 24px; color: #8a7a8c; }
+.error { color: #b3261e; }
+.archive-table { width: 100%; }
+.badge { padding: 4px 12px; border-radius: 999px; font-weight: 600; font-size: 0.85rem; }
+.priority-LOW { background: #e9dff7; color: #3f1f8f; }
+.priority-MEDIUM { background: #fff0d1; color: #7a4a00; }
+.priority-HIGH { background: #fde0dc; color: #a01810; }

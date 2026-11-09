@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { authGuard } from './auth/auth.guard';
+import { Archives } from './archives/archives';
 import { Dashboard } from './dashboard/dashboard';
 import { ForgotPassword } from './forgot-password/forgot-password';
 import { Login } from './login/login';
@@ -15,6 +16,7 @@ export const routes: Routes = [
   { path: 'reset-password', component: ResetPassword },
   { path: 'dashboard', component: Dashboard, canActivate: [authGuard] },
   { path: 'tasks', component: TaskList, canActivate: [authGuard] },
+  { path: 'archives', component: Archives, canActivate: [authGuard] },
   { path: 'tasks/new', component: TaskForm, canActivate: [authGuard] },
   { path: 'tasks/:id/edit', component: TaskForm, canActivate: [authGuard] },
   { path: '', pathMatch: 'full', redirectTo: 'dashboard' },

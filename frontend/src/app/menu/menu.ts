@@ -30,7 +30,7 @@ export class Menu {
     { label: 'Membres', icon: 'group' },
     { label: 'Projets', icon: 'folder' },
     { label: 'Catégories', icon: 'label' },
-    { label: 'Archives', icon: 'inventory_2' },
+    { label: 'Archives', icon: 'inventory_2', route: '/archives' },
     { label: 'Historique', icon: 'history' },
   ];
 
