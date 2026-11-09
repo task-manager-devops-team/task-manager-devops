@@ -1,0 +1,40 @@
+.page {
+  max-width: 640px;
+  margin: 32px auto;
+  padding: 0 16px;
+}
+
+.form-card {
+  padding: 24px;
+  border-radius: 24px;
+  border-top: 6px solid #7b3fa0;
+}
+
+h1 {
+  margin: 0 0 16px;
+  color: #662d91;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+}
+
+.row {
+  display: flex;
+  gap: 16px;
+}
+
+.row mat-form-field {
+  flex: 1;
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+.error {
+  color: #b3261e;
+}

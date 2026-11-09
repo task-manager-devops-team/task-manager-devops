@@ -1,7 +1,8 @@
 <mat-card class="list-card">
-  <mat-card-header>
-    <mat-card-title>Mes tâches</mat-card-title>
-  </mat-card-header>
+  <div class="list-head">
+    <h2 class="list-title">Mes tâches</h2>
+    <a mat-flat-button routerLink="/tasks/new">Nouvelle tâche</a>
+  </div>
 
   <mat-card-content>
     @if (loading()) {
@@ -18,6 +19,11 @@
         <ng-container matColumnDef="title">
           <th mat-header-cell *matHeaderCellDef>Titre</th>
           <td mat-cell *matCellDef="let task" [class.title-done]="task.status === 'DONE'">{{ task.title }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="assignee">
+          <th mat-header-cell *matHeaderCellDef>Responsable</th>
+          <td mat-cell *matCellDef="let task">{{ task.assigneeName || '—' }}</td>
         </ng-container>
 
         <ng-container matColumnDef="priority">

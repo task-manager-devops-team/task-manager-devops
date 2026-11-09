@@ -8,4 +8,15 @@ export interface Task {
   priority: TaskPriority;
   dueDate?: string;
   status: TaskStatus;
+  assigneeId?: number;
+  assigneeName?: string;
+}
+
+export interface TaskCreate {
+  title: string;
+  description?: string;
+  priority: TaskPriority;
+  dueDate?: string;
+  status: TaskStatus;
+  assigneeId?: number;
 }

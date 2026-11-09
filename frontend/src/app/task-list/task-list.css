@@ -99,3 +99,14 @@ mat-card-title {
   .task-table th.mat-mdc-header-cell,
   .task-table td.mat-mdc-cell { padding: 0 8px; }
 }
+.list-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 16px 0;
+}
+
+.list-title {
+  margin: 0;
+  color: #662d91;
+}

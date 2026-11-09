@@ -1,21 +1,23 @@
 import { DatePipe } from '@angular/common';
 import { Component, inject, OnInit, signal } from '@angular/core';
+import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTableModule } from '@angular/material/table';
+import { RouterLink } from '@angular/router';
 import { Task, TaskPriority, TaskStatus } from '../models/task';
 import { TaskApi } from '../services/task-api';
 
 @Component({
   selector: 'app-task-list',
-  imports: [DatePipe, MatCardModule, MatProgressSpinnerModule, MatTableModule],
+  imports: [DatePipe, RouterLink, MatButtonModule, MatCardModule, MatProgressSpinnerModule, MatTableModule],
   templateUrl: './task-list.html',
   styleUrl: './task-list.css',
 })
 export class TaskList implements OnInit {
   private readonly api = inject(TaskApi);
 
-  readonly displayedColumns = ['title', 'priority', 'dueDate', 'status'];
+  readonly displayedColumns = ['title', 'assignee', 'priority', 'dueDate', 'status'];
 
   readonly statusLabels: Record<TaskStatus, string> = {
     TODO: 'À faire',
