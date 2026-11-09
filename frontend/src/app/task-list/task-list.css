@@ -111,3 +111,17 @@ mat-card-title {
   line-height: 1;
   color: #662d91;
 }
+.badge-btn {
+  display: inline-flex;
+  align-items: center;
+  border: 0;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.chevron {
+  width: 18px;
+  height: 18px;
+  font-size: 18px;
+}

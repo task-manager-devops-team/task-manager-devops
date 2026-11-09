@@ -3,7 +3,7 @@ import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { Stats } from '../models/stats';
-import { Task, TaskCreate } from '../models/task';
+import { Task, TaskCreate, TaskStatus } from '../models/task';
 import { User } from '../models/user';
 
 @Injectable({ providedIn: 'root' })
@@ -29,6 +29,10 @@ export class TaskApi {
 
   updateTask(id: number, task: TaskCreate): Observable<Task> {
     return this.http.put<Task>(`${this.baseUrl}/tasks/${id}`, task);
+  }
+
+  updateStatus(id: number, status: TaskStatus): Observable<Task> {
+    return this.http.patch<Task>(`${this.baseUrl}/tasks/${id}`, { status });
   }
 
   deleteTask(id: number): Observable<void> {
