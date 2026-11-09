@@ -1,6 +1,6 @@
 <section class="page">
   <mat-card class="form-card">
-    <h1>Nouvelle tâche</h1>
+    <h1>{{ taskId === null ? 'Nouvelle tâche' : 'Modifier la tâche' }}</h1>
 
     <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
       <mat-form-field appearance="outline">
@@ -54,7 +54,7 @@
 
       <div class="actions">
         <a mat-stroked-button routerLink="/tasks">Annuler</a>
-        <button mat-flat-button type="submit" [disabled]="saving()">Créer la tâche</button>
+        <button mat-flat-button type="submit" [disabled]="saving()">{{ taskId === null ? 'Créer la tâche' : 'Enregistrer' }}</button>
       </div>
     </form>
   </mat-card>

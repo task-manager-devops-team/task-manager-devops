@@ -5,8 +5,8 @@ import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
-import { Router, RouterLink } from '@angular/router';
-import { TaskCreate, TaskPriority } from '../models/task';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { TaskCreate, TaskPriority, TaskStatus } from '../models/task';
 import { User } from '../models/user';
 import { TaskApi } from '../services/task-api';
 
@@ -28,6 +28,10 @@ export class TaskForm implements OnInit {
   private readonly fb = inject(FormBuilder);
   private readonly api = inject(TaskApi);
   private readonly router = inject(Router);
+  private readonly route = inject(ActivatedRoute);
+
+  readonly taskId = Number(this.route.snapshot.paramMap.get('id')) || null;
+  private status: TaskStatus = 'TODO';
 
   readonly priorities: { value: TaskPriority; label: string }[] = [
     { value: 'LOW', label: 'Basse' },
@@ -53,6 +57,22 @@ export class TaskForm implements OnInit {
       next: (users) => this.users.set(users),
       error: () => this.usersError.set(true),
     });
+
+    if (this.taskId !== null) {
+      this.api.getTask(this.taskId).subscribe({
+        next: (t) => {
+          this.status = t.status;
+          this.form.patchValue({
+            title: t.title,
+            description: t.description ?? '',
+            priority: t.priority,
+            dueDate: t.dueDate ?? '',
+            assigneeId: t.assigneeId ?? null,
+          });
+        },
+        error: () => this.error.set(true),
+      });
+    }
   }
 
   submit(): void {
@@ -66,12 +86,13 @@ export class TaskForm implements OnInit {
       description: v.description.trim() || undefined,
       priority: v.priority,
       dueDate: v.dueDate || undefined,
-      status: 'TODO',
+      status: this.status,
       assigneeId: v.assigneeId ?? undefined,
     };
     this.saving.set(true);
     this.error.set(false);
-    this.api.createTask(body).subscribe({
+    const request = this.taskId === null ? this.api.createTask(body) : this.api.updateTask(this.taskId, body);
+    request.subscribe({
       next: () => this.router.navigate(['/tasks']),
       error: () => {
         this.saving.set(false);

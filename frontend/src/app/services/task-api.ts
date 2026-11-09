@@ -23,6 +23,18 @@ export class TaskApi {
     return this.http.post<Task>(`${this.baseUrl}/tasks`, task);
   }
 
+  getTask(id: number): Observable<Task> {
+    return this.http.get<Task>(`${this.baseUrl}/tasks/${id}`);
+  }
+
+  updateTask(id: number, task: TaskCreate): Observable<Task> {
+    return this.http.put<Task>(`${this.baseUrl}/tasks/${id}`, task);
+  }
+
+  deleteTask(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.baseUrl}/tasks/${id}`);
+  }
+
   getUsers(): Observable<User[]> {
     return this.http.get<User[]>(`${this.baseUrl}/users`);
   }

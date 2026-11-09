@@ -4,6 +4,10 @@
     <a mat-flat-button routerLink="/tasks/new">Nouvelle tâche</a>
   </div>
 
+  @if (actionError()) {
+    <p class="state state-error">L'action a échoué. Réessayez.</p>
+  }
+
   <mat-card-content>
     @if (loading()) {
       <div class="state">
@@ -44,6 +48,18 @@
           <th mat-header-cell *matHeaderCellDef>Statut</th>
           <td mat-cell *matCellDef="let task">
             <span [class]="'badge status-' + task.status">{{ statusLabel(task.status) }}</span>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef>Actions</th>
+          <td mat-cell *matCellDef="let task">
+            <a mat-icon-button [routerLink]="['/tasks', task.id, 'edit']" aria-label="Modifier la tâche">
+              <mat-icon>edit</mat-icon>
+            </a>
+            <button mat-icon-button type="button" (click)="remove(task)" aria-label="Supprimer la tâche">
+              <mat-icon>delete</mat-icon>
+            </button>
           </td>
         </ng-container>
 
