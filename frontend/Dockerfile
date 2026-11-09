@@ -8,6 +8,9 @@ RUN npx ng build
 
 # Étape 2 : servir les fichiers avec Nginx (sans root)
 FROM nginxinc/nginx-unprivileged:1.27-alpine
+USER root
+RUN apk upgrade --no-cache
+USER 101
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 COPY --from=build /app/dist/taskmanager-ui/browser /usr/share/nginx/html
 EXPOSE 8080
