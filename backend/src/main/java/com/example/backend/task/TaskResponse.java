@@ -8,10 +8,11 @@ public record TaskResponse(
         String description,
         Priority priority,
         LocalDate dueDate,
-        TaskStatus status) {
+        TaskStatus status,
+        boolean archived) {
 
     public static TaskResponse from(Task t) {
         return new TaskResponse(t.getId(), t.getTitle(), t.getDescription(),
-                t.getPriority(), t.getDueDate(), t.getStatus());
+                t.getPriority(), t.getDueDate(), t.getStatus(), t.isArchived());
     }
 }

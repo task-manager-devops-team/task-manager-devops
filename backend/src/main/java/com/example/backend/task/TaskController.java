@@ -49,6 +49,7 @@ public class TaskController {
         if (request.priority() != null) task.setPriority(request.priority());
         if (request.dueDate() != null) task.setDueDate(request.dueDate());
         if (request.status() != null) task.setStatus(request.status());
+        if (request.archived() != null) task.setArchived(request.archived());
         return TaskResponse.from(repository.save(task));
     }
 
@@ -69,6 +70,7 @@ public class TaskController {
         task.setDueDate(r.dueDate());
         if (r.priority() != null) task.setPriority(r.priority());
         if (r.status() != null) task.setStatus(r.status());
+        task.setArchived(Boolean.TRUE.equals(r.archived()));
         return task;
     }
 }

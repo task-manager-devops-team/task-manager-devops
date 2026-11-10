@@ -46,7 +46,8 @@ class TaskControllerTest {
                 .andExpect(jsonPath("$[0].title").value("Exemple"))
                 .andExpect(jsonPath("$[0].priority").value("HIGH"))
                 .andExpect(jsonPath("$[0].dueDate").value("2026-11-20"))
-                .andExpect(jsonPath("$[0].status").value("TODO"));
+                .andExpect(jsonPath("$[0].status").value("TODO"))
+                .andExpect(jsonPath("$[0].archived").value(false));
     }
 
     @Test
@@ -62,7 +63,23 @@ class TaskControllerTest {
                         .content("{\"title\":\"Exemple\",\"priority\":\"HIGH\"}"))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id").value(1))
-                .andExpect(jsonPath("$.status").value("TODO"));
+                .andExpect(jsonPath("$.status").value("TODO"))
+                .andExpect(jsonPath("$.archived").value(false));
+    }
+
+    @Test
+    void createCanSetArchived() throws Exception {
+        given(repository.save(any(Task.class))).willAnswer(inv -> {
+            Task t = inv.getArgument(0);
+            t.setId(1L);
+            return t;
+        });
+
+        mockMvc.perform(post("/api/tasks")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"title\":\"Exemple\",\"archived\":true}"))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.archived").value(true));
     }
 
     @Test
@@ -91,8 +108,10 @@ class TaskControllerTest {
 
         @Test
     void patchChangesOnlyStatus() throws Exception {
-        given(repository.findById(1L)).willReturn(Optional.of(sample()));
-        given(repository.save(any(Task.class))).willAnswer(inv -> inv.getArgument(0));
+            Task existing = sample();
+            existing.setArchived(true);
+            given(repository.findById(1L)).willReturn(Optional.of(existing));
+            given(repository.save(any(Task.class))).willAnswer(inv -> inv.getArgument(0));
 
         mockMvc.perform(patch("/api/tasks/1")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -101,7 +120,48 @@ class TaskControllerTest {
                 .andExpect(jsonPath("$.status").value("DONE"))
                 .andExpect(jsonPath("$.title").value("Exemple"))
                 .andExpect(jsonPath("$.description").value("Texte"))
-                .andExpect(jsonPath("$.dueDate").value("2026-11-20"));
+                .andExpect(jsonPath("$.dueDate").value("2026-11-20"))
+                .andExpect(jsonPath("$.archived").value(true));
+    }
+
+    @Test
+    void patchChangesArchivedWithoutChangingOtherFields() throws Exception {
+        given(repository.findById(1L)).willReturn(Optional.of(sample()));
+        given(repository.save(any(Task.class))).willAnswer(inv -> inv.getArgument(0));
+
+        mockMvc.perform(patch("/api/tasks/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"archived\":true}"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.archived").value(true))
+                .andExpect(jsonPath("$.title").value("Exemple"))
+                .andExpect(jsonPath("$.status").value("TODO"));
+    }
+
+    @Test
+    void putReplacesArchivedAndDefaultsOmittedArchivedToFalse() throws Exception {
+        Task existing = sample();
+        existing.setArchived(true);
+        given(repository.findById(1L)).willReturn(Optional.of(existing));
+        given(repository.save(any(Task.class))).willAnswer(inv -> inv.getArgument(0));
+
+        mockMvc.perform(put("/api/tasks/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"title\":\"Remplacée\",\"priority\":\"MEDIUM\",\"status\":\"TODO\"}"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.archived").value(false));
+    }
+
+    @Test
+    void putCanSetArchived() throws Exception {
+        given(repository.findById(1L)).willReturn(Optional.of(sample()));
+        given(repository.save(any(Task.class))).willAnswer(inv -> inv.getArgument(0));
+
+        mockMvc.perform(put("/api/tasks/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"title\":\"Remplacée\",\"priority\":\"MEDIUM\",\"status\":\"TODO\",\"archived\":true}"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.archived").value(true));
     }
 
     @Test
