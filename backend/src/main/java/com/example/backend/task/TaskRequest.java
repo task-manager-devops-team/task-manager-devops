@@ -9,5 +9,6 @@ public record TaskRequest(
         @Size(max = 2000) String description,
         Priority priority,
         LocalDate dueDate,
-        TaskStatus status) {
+        TaskStatus status,
+        Boolean archived) {
 }
