@@ -1,4 +1,4 @@
-package com.example.backend;
+package com.example.backend.health;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;

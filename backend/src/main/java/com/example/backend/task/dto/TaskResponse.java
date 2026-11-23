@@ -1,5 +1,8 @@
-package com.example.backend.task;
+package com.example.backend.task.dto;
 
+import com.example.backend.task.domain.Priority;
+import com.example.backend.task.domain.Task;
+import com.example.backend.task.domain.TaskStatus;
 import java.time.LocalDate;
 
 public record TaskResponse(

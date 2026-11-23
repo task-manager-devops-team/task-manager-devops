@@ -1,5 +1,7 @@
-package com.example.backend.task;
+package com.example.backend.task.dto;
 
+import com.example.backend.task.domain.Priority;
+import com.example.backend.task.domain.TaskStatus;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import java.time.LocalDate;

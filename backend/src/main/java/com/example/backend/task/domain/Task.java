@@ -1,4 +1,4 @@
-package com.example.backend.task;
+package com.example.backend.task.domain;
 
 import jakarta.persistence.*;
 import java.time.LocalDate;
