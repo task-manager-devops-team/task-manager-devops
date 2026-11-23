@@ -1,4 +1,4 @@
-package com.example.backend;
+package com.example.backend.health;
 
 import java.util.Map;
 import org.springframework.web.bind.annotation.GetMapping;

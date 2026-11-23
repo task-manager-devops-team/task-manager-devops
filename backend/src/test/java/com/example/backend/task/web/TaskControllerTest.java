@@ -1,20 +1,29 @@
-package com.example.backend.task;
+package com.example.backend.task.web;
 
+import com.example.backend.task.domain.Priority;
+import com.example.backend.task.domain.Task;
+import com.example.backend.task.domain.TaskStatus;
+import com.example.backend.task.dto.TaskFilter;
+import com.example.backend.task.dto.TaskPatchRequest;
+import com.example.backend.task.dto.TaskRequest;
+import com.example.backend.task.dto.TaskResponse;
+import com.example.backend.task.service.TaskService;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
-import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.web.server.ResponseStatusException;
 
 @WebMvcTest(TaskController.class)
 class TaskControllerTest {
@@ -23,7 +32,7 @@ class TaskControllerTest {
     MockMvc mockMvc;
 
     @MockitoBean
-    TaskRepository repository;
+    TaskService service;
 
     private Task sample() {
         Task t = new Task();
@@ -38,7 +47,7 @@ class TaskControllerTest {
 
     @Test
     void listReturnsContract() throws Exception {
-        given(repository.findAll(any(Sort.class))).willReturn(List.of(sample()));
+        given(service.list(any(TaskFilter.class))).willReturn(List.of(TaskResponse.from(sample())));
 
         mockMvc.perform(get("/api/tasks"))
                 .andExpect(status().isOk())
@@ -52,11 +61,7 @@ class TaskControllerTest {
 
     @Test
     void createReturns201() throws Exception {
-        given(repository.save(any(Task.class))).willAnswer(inv -> {
-            Task t = inv.getArgument(0);
-            t.setId(1L);
-            return t;
-        });
+        given(service.create(any(TaskRequest.class))).willReturn(TaskResponse.from(sample()));
 
         mockMvc.perform(post("/api/tasks")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -69,11 +74,9 @@ class TaskControllerTest {
 
     @Test
     void createCanSetArchived() throws Exception {
-        given(repository.save(any(Task.class))).willAnswer(inv -> {
-            Task t = inv.getArgument(0);
-            t.setId(1L);
-            return t;
-        });
+        Task archived = sample();
+        archived.setArchived(true);
+        given(service.create(any(TaskRequest.class))).willReturn(TaskResponse.from(archived));
 
         mockMvc.perform(post("/api/tasks")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -92,7 +95,7 @@ class TaskControllerTest {
 
     @Test
     void getUnknownReturns404() throws Exception {
-        given(repository.findById(99L)).willReturn(Optional.empty());
+        given(service.get(99L)).willThrow(new ResponseStatusException(HttpStatus.NOT_FOUND));
 
         mockMvc.perform(get("/api/tasks/99"))
                 .andExpect(status().isNotFound());
@@ -100,18 +103,17 @@ class TaskControllerTest {
 
     @Test
     void deleteReturns204() throws Exception {
-        given(repository.findById(1L)).willReturn(Optional.of(sample()));
-
         mockMvc.perform(delete("/api/tasks/1"))
                 .andExpect(status().isNoContent());
     }
 
         @Test
     void patchChangesOnlyStatus() throws Exception {
-            Task existing = sample();
-            existing.setArchived(true);
-            given(repository.findById(1L)).willReturn(Optional.of(existing));
-            given(repository.save(any(Task.class))).willAnswer(inv -> inv.getArgument(0));
+        Task existing = sample();
+        existing.setArchived(true);
+        existing.setStatus(TaskStatus.DONE);
+        given(service.patch(eq(1L), any(TaskPatchRequest.class)))
+                .willReturn(TaskResponse.from(existing));
 
         mockMvc.perform(patch("/api/tasks/1")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -126,8 +128,10 @@ class TaskControllerTest {
 
     @Test
     void patchChangesArchivedWithoutChangingOtherFields() throws Exception {
-        given(repository.findById(1L)).willReturn(Optional.of(sample()));
-        given(repository.save(any(Task.class))).willAnswer(inv -> inv.getArgument(0));
+        Task archived = sample();
+        archived.setArchived(true);
+        given(service.patch(eq(1L), any(TaskPatchRequest.class)))
+                .willReturn(TaskResponse.from(archived));
 
         mockMvc.perform(patch("/api/tasks/1")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -140,10 +144,11 @@ class TaskControllerTest {
 
     @Test
     void putReplacesArchivedAndDefaultsOmittedArchivedToFalse() throws Exception {
-        Task existing = sample();
-        existing.setArchived(true);
-        given(repository.findById(1L)).willReturn(Optional.of(existing));
-        given(repository.save(any(Task.class))).willAnswer(inv -> inv.getArgument(0));
+        Task updated = sample();
+        updated.setTitle("Remplacée");
+        updated.setPriority(Priority.MEDIUM);
+        given(service.update(eq(1L), any(TaskRequest.class)))
+                .willReturn(TaskResponse.from(updated));
 
         mockMvc.perform(put("/api/tasks/1")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -154,8 +159,12 @@ class TaskControllerTest {
 
     @Test
     void putCanSetArchived() throws Exception {
-        given(repository.findById(1L)).willReturn(Optional.of(sample()));
-        given(repository.save(any(Task.class))).willAnswer(inv -> inv.getArgument(0));
+        Task updated = sample();
+        updated.setTitle("Remplacée");
+        updated.setPriority(Priority.MEDIUM);
+        updated.setArchived(true);
+        given(service.update(eq(1L), any(TaskRequest.class)))
+                .willReturn(TaskResponse.from(updated));
 
         mockMvc.perform(put("/api/tasks/1")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -174,7 +183,8 @@ class TaskControllerTest {
 
     @Test
     void patchUnknownReturns404() throws Exception {
-        given(repository.findById(99L)).willReturn(Optional.empty());
+        given(service.patch(eq(99L), any(TaskPatchRequest.class)))
+                .willThrow(new ResponseStatusException(HttpStatus.NOT_FOUND));
 
         mockMvc.perform(patch("/api/tasks/99")
                         .contentType(MediaType.APPLICATION_JSON)
