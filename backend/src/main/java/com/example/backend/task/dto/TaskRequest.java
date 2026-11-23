@@ -12,5 +12,6 @@ public record TaskRequest(
         Priority priority,
         LocalDate dueDate,
         TaskStatus status,
-        Boolean archived) {
+        Boolean archived,
+        Long assigneeId) {
 }

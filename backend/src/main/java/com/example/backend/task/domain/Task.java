@@ -2,6 +2,7 @@ package com.example.backend.task.domain;
 
 import jakarta.persistence.*;
 import java.time.LocalDate;
+import com.example.backend.user.domain.User;
 
 @Entity
 @Table(name = "tasks")
@@ -30,6 +31,10 @@ public class Task {
     @Column(nullable = false)
     private boolean archived;
 
+    @ManyToOne
+    @JoinColumn(name = "assignee_id")
+    private User assignee;
+
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
     public String getTitle() { return title; }
@@ -44,4 +49,6 @@ public class Task {
     public void setStatus(TaskStatus status) { this.status = status; }
     public boolean isArchived() { return archived; }
     public void setArchived(boolean archived) { this.archived = archived; }
+    public User getAssignee() { return assignee; }
+    public void setAssignee(User assignee) { this.assignee = assignee; }
 }

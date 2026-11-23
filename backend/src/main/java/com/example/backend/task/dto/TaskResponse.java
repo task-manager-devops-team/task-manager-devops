@@ -12,10 +12,14 @@ public record TaskResponse(
         Priority priority,
         LocalDate dueDate,
         TaskStatus status,
-        boolean archived) {
+        boolean archived,
+        Long assigneeId,
+        String assigneeName) {
 
     public static TaskResponse from(Task t) {
         return new TaskResponse(t.getId(), t.getTitle(), t.getDescription(),
-                t.getPriority(), t.getDueDate(), t.getStatus(), t.isArchived());
+                t.getPriority(), t.getDueDate(), t.getStatus(), t.isArchived(),
+                t.getAssignee() == null ? null : t.getAssignee().getId(),
+                t.getAssignee() == null ? null : t.getAssignee().getName());
     }
 }

@@ -7,6 +7,8 @@ import com.example.backend.task.dto.TaskRequest;
 import com.example.backend.task.dto.TaskResponse;
 import com.example.backend.task.repository.TaskRepository;
 import com.example.backend.task.repository.TaskSpecifications;
+import com.example.backend.user.domain.User;
+import com.example.backend.user.repository.UserRepository;
 import java.util.List;
 import java.util.Objects;
 import org.springframework.http.HttpStatus;
@@ -17,9 +19,11 @@ import org.springframework.web.server.ResponseStatusException;
 public class TaskService {
 
     private final TaskRepository repository;
+    private final UserRepository userRepository;
 
-    public TaskService(TaskRepository repository) {
+    public TaskService(TaskRepository repository, UserRepository userRepository) {
         this.repository = repository;
+        this.userRepository = userRepository;
     }
 
     public List<TaskResponse> list(TaskFilter filter) {
@@ -50,6 +54,9 @@ public class TaskService {
         if (request.dueDate() != null) task.setDueDate(request.dueDate());
         if (request.status() != null) task.setStatus(request.status());
         if (request.archived() != null) task.setArchived(request.archived());
+        if (request.assigneeIdProvided()) {
+            task.setAssignee(resolveAssignee(request.assigneeId()));
+        }
         return TaskResponse.from(repository.save(task));
     }
 
@@ -68,8 +75,16 @@ public class TaskService {
         task.setDueDate(request.dueDate());
         if (request.priority() != null) task.setPriority(request.priority());
         if (request.status() != null) task.setStatus(request.status());
-        task.setArchived(Boolean.TRUE.equals(request.archived()));
+        if (request.archived() != null) task.setArchived(request.archived());
+        task.setAssignee(resolveAssignee(request.assigneeId()));
         return task;
+    }
+
+    private User resolveAssignee(Long id) {
+        if (id == null) return null;
+        return userRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.BAD_REQUEST, "Responsable introuvable"));
     }
 
     private void validate(TaskFilter filter) {
