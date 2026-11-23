@@ -1,0 +1,8 @@
+CREATE TABLE users (
+    id            BIGSERIAL PRIMARY KEY,
+    name          VARCHAR(100) NOT NULL,
+    email         VARCHAR(255) NOT NULL UNIQUE,
+    password_hash VARCHAR(255)
+);
+
+ALTER TABLE tasks ADD COLUMN assignee_id BIGINT REFERENCES users(id);

@@ -1,5 +1,14 @@
 package com.example.backend.task.web;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+
 import com.example.backend.task.domain.Priority;
 import com.example.backend.task.domain.Task;
 import com.example.backend.task.domain.TaskStatus;
@@ -8,15 +17,11 @@ import com.example.backend.task.dto.TaskPatchRequest;
 import com.example.backend.task.dto.TaskRequest;
 import com.example.backend.task.dto.TaskResponse;
 import com.example.backend.task.service.TaskService;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.BDDMockito.given;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.http.HttpStatus;
@@ -56,7 +61,8 @@ class TaskControllerTest {
                 .andExpect(jsonPath("$[0].priority").value("HIGH"))
                 .andExpect(jsonPath("$[0].dueDate").value("2026-11-20"))
                 .andExpect(jsonPath("$[0].status").value("TODO"))
-                .andExpect(jsonPath("$[0].archived").value(false));
+                .andExpect(jsonPath("$[0].archived").value(false))
+                .andExpect(jsonPath("$[0].assigneeId").doesNotExist());
     }
 
     @Test
@@ -107,7 +113,7 @@ class TaskControllerTest {
                 .andExpect(status().isNoContent());
     }
 
-        @Test
+    @Test
     void patchChangesOnlyStatus() throws Exception {
         Task existing = sample();
         existing.setArchived(true);
@@ -143,7 +149,36 @@ class TaskControllerTest {
     }
 
     @Test
-    void putReplacesArchivedAndDefaultsOmittedArchivedToFalse() throws Exception {
+    void patchDistinguishesNullFromAbsentAssignee() throws Exception {
+        given(service.patch(eq(1L), any(TaskPatchRequest.class)))
+                .willReturn(TaskResponse.from(sample()));
+
+        mockMvc.perform(patch("/api/tasks/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"assigneeId\":null}"))
+                .andExpect(status().isOk());
+        mockMvc.perform(patch("/api/tasks/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"status\":\"DONE\"}"))
+                .andExpect(status().isOk());
+        mockMvc.perform(patch("/api/tasks/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"assigneeId\":3}"))
+                .andExpect(status().isOk());
+
+        ArgumentCaptor<TaskPatchRequest> captor = ArgumentCaptor.forClass(TaskPatchRequest.class);
+        verify(service, times(3)).patch(eq(1L), captor.capture());
+        List<TaskPatchRequest> sent = captor.getAllValues();
+
+        assertThat(sent.get(0).assigneeIdProvided()).isTrue();
+        assertThat(sent.get(0).assigneeId()).isNull();
+        assertThat(sent.get(1).assigneeIdProvided()).isFalse();
+        assertThat(sent.get(2).assigneeIdProvided()).isTrue();
+        assertThat(sent.get(2).assigneeId()).isEqualTo(3L);
+    }
+
+    @Test
+    void putWithoutArchivedReturns200() throws Exception {
         Task updated = sample();
         updated.setTitle("Remplacée");
         updated.setPriority(Priority.MEDIUM);
@@ -154,7 +189,7 @@ class TaskControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"title\":\"Remplacée\",\"priority\":\"MEDIUM\",\"status\":\"TODO\"}"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.archived").value(false));
+                .andExpect(jsonPath("$.title").value("Remplacée"));
     }
 
     @Test
